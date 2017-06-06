@@ -17,4 +17,5 @@ import java.util.List;
 @Mapper
 public interface Oracle2ESMapper {
     public List<HashMap<String,String>> testFetch();
+    public List<HashMap<String,String>> fetchKpiMapping();
 }

@@ -5,4 +5,7 @@
     <select id="testFetch" resultType="java.util.HashMap">
         select * from DW_ES_KPI_MAPPING t
     </select>
+    <select id="fetchKpiMapping" resultType="java.util.HashMap">
+        select t.KPI_CODE "KPI_Code",t.KPI_NAME "KPI_Name",t.KPI_TYPE "Acct_Type" from DMCODE_PUB.DMCODE_COMP_KPI_MAPPING t
+    </select>
 </mapper>

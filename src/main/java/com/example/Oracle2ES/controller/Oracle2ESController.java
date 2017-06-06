@@ -49,4 +49,16 @@ public class Oracle2ESController {
         }
     }
 
+    /**
+     * 从16库里取数入到ES
+     */
+    @PostMapping("/prodImport")
+    public void prodImport(){
+       try {
+           oracle2ESService.prodImport();
+       }catch (Exception e){
+           e.printStackTrace();
+       }
+    }
+
 }

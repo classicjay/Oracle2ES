@@ -32,11 +32,23 @@ public class Oracle2ESService {
         resultList = oracle2ESMapper.testFetch();
         return resultList;
     }
+
     public void testImport() throws Exception{
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.testFetch();
         String indexName = "testzj";
         String typeName = "kpicodemapping";
+        DataStore.createIndex(indexName);
+        DataStore.createMapping(indexName,typeName,dataList.get(0));
+        DataStore.bulkDataStorage(indexName,typeName,dataList);
+        logger.info("success");
+    }
+
+    public void prodImport()throws Exception{
+        List<HashMap<String,String>> dataList = new ArrayList<>();
+        dataList = oracle2ESMapper.fetchKpiMapping();
+        String indexName = "es_dw3.0_v2";
+        String typeName = "K";
         DataStore.createIndex(indexName);
         DataStore.createMapping(indexName,typeName,dataList.get(0));
         DataStore.bulkDataStorage(indexName,typeName,dataList);

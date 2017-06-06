@@ -31,9 +31,9 @@ public class Oracle2EsApplication {
                 .build();
         if(client == null) {
             client = new PreBuiltTransportClient(settings)
-                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.31.2"), 9300))//此步骤添加IP，至少一个，其实一个就够了，因为添加了自动嗅探配置
-                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.31.3"), 9300))
-                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.31.5"), 9300));
+                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("10.249.216.108"), 9300));
+//                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.31.2"), 9300));//此步骤添加IP，至少一个，其实一个就够了，因为添加了自动嗅探配置
+
         }
 	}
 }

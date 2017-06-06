@@ -89,7 +89,8 @@ public class DataStore {
                     data = data.field((String) entry.getKey(),(String) entry.getValue());
                 }
                 String dataStr = data.endObject().string();
-                IndexRequest indexrequest = new IndexRequest(indexName, typeName,getFirstValue(map)).source(dataStr);
+                //此处指定id
+                IndexRequest indexrequest = new IndexRequest(indexName, typeName,map.get("KPI_Code")).source(dataStr);
                 bulkProcessor.add(indexrequest);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -121,11 +122,18 @@ public class DataStore {
     public static void createMapping(String indexName, String typeName, HashMap<String,String> paramMap)throws Exception{
         XContentBuilder mapping= XContentFactory.jsonBuilder().startObject();
         String mappingStr;
-        mapping = mapping.startObject(typeName).startObject("properties");
+        mapping = mapping.startObject(typeName).startObject("_all").field("enabled",false).endObject().startObject("properties");
         Iterator iterator = paramMap.entrySet().iterator();
         while (iterator.hasNext()){
             Map.Entry entry = (Map.Entry)iterator.next();
-            mapping = mapping.startObject((String)entry.getKey()).field("type", "text").endObject();
+            String key=(String)entry.getKey();
+            if(key.substring(key.length()-5,key.length()-1).equals("Code"))
+            {
+                mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").endObject();
+            }
+            else {
+                mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("analyzer", "ik_smart").field("search_analyzer", "ik_smart").field("include_in_all", false).endObject();
+            }
         }
         mappingStr = mapping.endObject().endObject().endObject().string();
         PutMappingRequest request = Requests.putMappingRequest(indexName).type(typeName).source(mappingStr);
@@ -138,7 +146,7 @@ public class DataStore {
      */
     public static void createIndex(String indexName) {
         try {
-            client.admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
+            client.admin().indices().create(new CreateIndexRequest(indexName).updateAllTypes(true)).actionGet();
         } catch (ResourceAlreadyExistsException e) {
             logger.info("该索引已经存在！");
         }
