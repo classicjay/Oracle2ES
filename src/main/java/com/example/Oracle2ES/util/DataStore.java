@@ -127,9 +127,9 @@ public class DataStore {
         while (iterator.hasNext()){
             Map.Entry entry = (Map.Entry)iterator.next();
             String key=(String)entry.getKey();
-            if(key.substring(key.length()-5,key.length()-1).equals("Code"))
+            if(key.substring(key.length()-4,key.length()).equals("Code"))
             {
-                mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").endObject();
+                mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").field("include_in_all", false).endObject();
             }
             else {
                 mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("analyzer", "ik_smart").field("search_analyzer", "ik_smart").field("include_in_all", false).endObject();
