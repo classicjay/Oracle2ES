@@ -27,31 +27,63 @@ public class Oracle2ESService {
 
     private static Logger logger = org.apache.log4j.Logger.getLogger(Oracle2ESService.class);
 
-    public List<HashMap<String,String>> testFetch(){
-        List<HashMap<String,String>> resultList = new ArrayList<>();
-        resultList = oracle2ESMapper.testFetch();
-        return resultList;
-    }
-
     public void testImport() throws Exception{
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.testFetch();
         String indexName = "testzj";
         String typeName = "kpicodemapping";
+        String id = "KPI_Code";
         DataStore.createIndex(indexName);
         DataStore.createMapping(indexName,typeName,dataList.get(0));
-        DataStore.bulkDataStorage(indexName,typeName,dataList);
+        DataStore.bulkDataStorage(indexName,typeName,dataList,id);
         logger.info("success");
     }
 
-    public void prodImport()throws Exception{
+    public void kpiMappingImp()throws Exception{
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchKpiMapping();
         String indexName = "es_dw3.0_v2";
         String typeName = "K";
-        DataStore.createIndex(indexName);
-        DataStore.createMapping(indexName,typeName,dataList.get(0));
-        DataStore.bulkDataStorage(indexName,typeName,dataList);
-        logger.info("success");
+        String id = "KPI_Code";
+        if (null != dataList && !dataList.isEmpty()){
+            DataStore.createIndex(indexName);
+            DataStore.createMapping(indexName,typeName,dataList.get(0));
+            DataStore.bulkDataStorage(indexName,typeName,dataList,id);
+            logger.info("指标映射表入数成功");
+        }else {
+            logger.info("指标映射表oracle查询为空");
+        }
+    }
+
+    public void subjectCodeImp()throws Exception{
+        List<HashMap<String,String>> dataList = new ArrayList<>();
+        dataList = oracle2ESMapper.fetchSubjectCode();
+        String indexName = "es_dw3.0_v2";
+        String typeName = "T";
+        String id = "Subject_Code";
+        if (null != dataList && !dataList.isEmpty()){
+            DataStore.createIndex(indexName);
+            DataStore.createMapping(indexName,typeName,dataList.get(0));
+            DataStore.bulkDataStorage(indexName,typeName,dataList,id);
+            logger.info("专题码表入数成功");
+        }else {
+            logger.info("专题码表oracle查询为空");
+        }
+    }
+
+    public void reportCodeImp()throws Exception{
+        List<HashMap<String,String>> dataList = new ArrayList<>();
+        dataList = oracle2ESMapper.fetchReportCode();
+        String indexName = "es_dw3.0_v2";
+        String typeName = "R";
+        String id = "Report_Code";
+        if (null != dataList && !dataList.isEmpty()){
+            DataStore.createIndex(indexName);
+            DataStore.createMapping(indexName,typeName,dataList.get(0));
+            DataStore.bulkDataStorage(indexName,typeName,dataList,id);
+            logger.info("报告码表入数成功");
+        }else {
+            logger.info("报告码表oracle查询为空");
+        }
     }
 }

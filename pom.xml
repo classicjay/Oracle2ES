@@ -5,11 +5,11 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>Oracle2ES</artifactId>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Oracle2ES</name>
-	<description>Demo project for Spring Boot</description>
+	<description>这个版本修改了sql中指标码表的表名，这张表里只有一条记录SSS，上一个版本可用</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

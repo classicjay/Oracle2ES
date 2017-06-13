@@ -5,7 +5,39 @@
     <select id="testFetch" resultType="java.util.HashMap">
         select * from DW_ES_KPI_MAPPING t
     </select>
+
     <select id="fetchKpiMapping" resultType="java.util.HashMap">
-        select t.KPI_CODE "KPI_Code",t.KPI_NAME "KPI_Name",t.KPI_TYPE "Acct_Type" from DMCODE_PUB.DMCODE_COMP_KPI_MAPPING t
+        <!--select t.KPI_CODE "KPI_Code",t.KPI_NAME "KPI_Name",-->
+        <!--case t.LABEL_TYPE-->
+        <!--when 'D' then '日报'-->
+        <!--when 'M' then '月报'-->
+        <!--else '其他' end  "Acct_Type"-->
+        <!--from DMCODE_PUB.DMCODE_COMP_KPI_MAPPING t where t.IS_VALID='1'-->
+
+        <!--只有SSS一条数的测试表-->
+        select t.KPI_CODE "KPI_Code",t.KPI_NAME "KPI_Name",
+        case t.LABEL_TYPE
+        when 'D' then '日报'
+        when 'M' then '月报'
+        else '其他' end  "Acct_Type"
+        from DW_KPICODE_TEMP t
+    </select>
+
+    <select id="fetchSubjectCode" resultType="java.util.HashMap">
+        select t.SUBJECT_CODE "Subject_Code",t.SUBJECT_NAME "Subject_Name",t.SUBJECT_DESC "Desc",
+        case t.LABEL_TYPE
+        when '1' then '日报'
+        when '2' then '月报'
+        else '其他' end  "Acct_Type"
+        from DW_NEWQUERY_SUBJECT t
+    </select>
+
+    <select id="fetchReportCode" resultType="java.util.HashMap">
+        select t.ID "Report_Code",t.FILENAME "Report_Name",
+        case t.LABEL_TYPE
+        when '1' then '全部'
+        when '2' then '全部'
+        else '其他' end  "Acct_Type"
+        from DW_NEWQUERY_REPORT t
     </select>
 </mapper>

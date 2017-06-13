@@ -8,10 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * <p>Title: BONC -  Oracle2ESController</p>
  * <p>Description:  </p>
@@ -29,14 +25,7 @@ public class Oracle2ESController {
 
     @Autowired
     Oracle2ESService oracle2ESService;
-
-    @PostMapping("/zhouxy")
-    public List<HashMap<String,String>> testFetch(){
-        List<HashMap<String,String>> resultList = new ArrayList<>();
-        resultList = oracle2ESService.testFetch();
-        return resultList;
-    }
-
+    
     /**
      * 测试从库里取数后入到ES
      */
@@ -50,15 +39,39 @@ public class Oracle2ESController {
     }
 
     /**
-     * 从16库里取数入到ES
+     * 从16库里取指标映射表入到ES
      */
-    @PostMapping("/prodImport")
-    public void prodImport(){
+    @PostMapping("/kpiMappingImport")
+    public void kpiMappingImport(){
        try {
-           oracle2ESService.prodImport();
+           oracle2ESService.kpiMappingImp();
        }catch (Exception e){
            e.printStackTrace();
        }
+    }
+
+    /**
+     * 从16库里取专题码表入到ES
+     */
+    @PostMapping("/subjectCodeImport")
+    public void subjectCodeImport(){
+        try {
+            oracle2ESService.subjectCodeImp();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 从16库里取报告码表入到ES
+     */
+    @PostMapping("/reportCodeImport")
+    public void reportCodeImport(){
+        try {
+            oracle2ESService.reportCodeImp();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

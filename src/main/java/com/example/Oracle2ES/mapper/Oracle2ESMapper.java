@@ -18,4 +18,6 @@ import java.util.List;
 public interface Oracle2ESMapper {
     public List<HashMap<String,String>> testFetch();
     public List<HashMap<String,String>> fetchKpiMapping();
+    public List<HashMap<String,String>> fetchSubjectCode();
+    public List<HashMap<String,String>> fetchReportCode();
 }

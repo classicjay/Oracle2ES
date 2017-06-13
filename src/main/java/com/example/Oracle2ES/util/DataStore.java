@@ -40,12 +40,13 @@ public class DataStore {
     private static Logger logger = Logger.getLogger(DataStore.class);
 
     /**
-     * Bulk批量导入
+     * bulk批量导入
      * @param indexName
      * @param typeName
      * @param dataList
+     * @param id 指定 _id
      */
-    public static void bulkDataStorage(String indexName,String typeName,List<HashMap<String,String>> dataList){
+    public static void bulkDataStorage(String indexName,String typeName,List<HashMap<String,String>> dataList,String id){
         BulkProcessor bulkProcessor = BulkProcessor.builder(client,
                 new BulkProcessor.Listener(){
                     //可以从BulkRequest中获取请求信息request.requests()或者请求数量request.numberOfActions()。
@@ -90,7 +91,7 @@ public class DataStore {
                 }
                 String dataStr = data.endObject().string();
                 //此处指定id
-                IndexRequest indexrequest = new IndexRequest(indexName, typeName,map.get("KPI_Code")).source(dataStr);
+                IndexRequest indexrequest = new IndexRequest(indexName,typeName,map.get(id)).source(dataStr);
                 bulkProcessor.add(indexrequest);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -147,8 +148,8 @@ public class DataStore {
     public static void createIndex(String indexName) {
         try {
             client.admin().indices().create(new CreateIndexRequest(indexName).updateAllTypes(true)).actionGet();
-        } catch (ResourceAlreadyExistsException e) {
-            logger.info("该索引已经存在！");
+        } catch (ResourceAlreadyExistsException | IllegalStateException e) {
+            logger.info("该索引已经存在或客户端已经关闭！");
         }
     }
 
