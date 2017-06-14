@@ -11,6 +11,7 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Requests;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
@@ -18,13 +19,12 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import static com.example.Oracle2ES.Oracle2EsApplication.client;
 
 /**
  * <p>Title: BONC -  DataStore</p>
@@ -47,7 +47,13 @@ public class DataStore {
      * @param id 指定 _id
      */
     public static void bulkDataStorage(String indexName,String typeName,List<HashMap<String,String>> dataList,String id){
-        BulkProcessor bulkProcessor = BulkProcessor.builder(client,
+        TransportClient transportClient = null;
+        try {
+            transportClient = GenerateClient.getClient();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        BulkProcessor bulkProcessor = BulkProcessor.builder(transportClient,
                 new BulkProcessor.Listener(){
                     //可以从BulkRequest中获取请求信息request.requests()或者请求数量request.numberOfActions()。
                     @Override
@@ -110,7 +116,7 @@ public class DataStore {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        client.close();
+        transportClient.close();
     }
 
     /**
@@ -120,25 +126,38 @@ public class DataStore {
      * @param typeName 类型名
      * @throws Exception
      */
-    public static void createMapping(String indexName, String typeName, HashMap<String,String> paramMap)throws Exception{
-        XContentBuilder mapping= XContentFactory.jsonBuilder().startObject();
-        String mappingStr;
-        mapping = mapping.startObject(typeName).startObject("_all").field("enabled",false).endObject().startObject("properties");
-        Iterator iterator = paramMap.entrySet().iterator();
-        while (iterator.hasNext()){
-            Map.Entry entry = (Map.Entry)iterator.next();
-            String key=(String)entry.getKey();
-            if(key.substring(key.length()-4,key.length()).equals("Code"))
-            {
-                mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").field("include_in_all", false).endObject();
+    public static void createMapping(String indexName, String typeName, HashMap<String,String> paramMap){
+        PutMappingRequest request = null;
+        try {
+            XContentBuilder mapping= XContentFactory.jsonBuilder().startObject();
+            String mappingStr;
+            mapping = mapping.startObject(typeName).startObject("_all").field("enabled",false).endObject().startObject("properties");
+            Iterator iterator = paramMap.entrySet().iterator();
+            while (iterator.hasNext()){
+                Map.Entry entry = (Map.Entry)iterator.next();
+                String key=(String)entry.getKey();
+                if(key.substring(key.length()-4,key.length()).equals("Code"))
+                {
+                    mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").field("include_in_all", false).endObject();
+                }
+                else {
+                    mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("analyzer", "ik_smart").field("search_analyzer", "ik_smart").field("include_in_all", false).endObject();
+                }
             }
-            else {
-                mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("analyzer", "ik_smart").field("search_analyzer", "ik_smart").field("include_in_all", false).endObject();
-            }
+            mappingStr = mapping.endObject().endObject().endObject().string();
+            request = Requests.putMappingRequest(indexName).type(typeName).source(mappingStr);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        mappingStr = mapping.endObject().endObject().endObject().string();
-        PutMappingRequest request = Requests.putMappingRequest(indexName).type(typeName).source(mappingStr);
-        client.admin().indices().putMapping(request).actionGet();
+        TransportClient transportClient = null;
+        try {
+            transportClient = GenerateClient.getClient();
+            transportClient.admin().indices().putMapping(request).actionGet();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }finally {
+            transportClient.close();
+        }
     }
 
     /**
@@ -146,10 +165,15 @@ public class DataStore {
      * @param indexName
      */
     public static void createIndex(String indexName) {
+        TransportClient transportClient = null;
         try {
-            client.admin().indices().create(new CreateIndexRequest(indexName).updateAllTypes(true)).actionGet();
-        } catch (ResourceAlreadyExistsException | IllegalStateException e) {
+            transportClient = GenerateClient.getClient();
+            transportClient.admin().indices().create(new CreateIndexRequest(indexName).updateAllTypes(true)).actionGet();
+        } catch (ResourceAlreadyExistsException | IllegalStateException | UnknownHostException e) {
+            e.printStackTrace();
             logger.info("该索引已经存在或客户端已经关闭！");
+        }finally {
+            transportClient.close();
         }
     }
 
