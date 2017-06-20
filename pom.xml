@@ -5,11 +5,11 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>Oracle2ES</artifactId>
-	<version>0.1.2-SNAPSHOT</version>
+	<version>0.1.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Oracle2ES</name>
-	<description>指标码表入数限制is_valid</description>
+	<description>指标名称字段由KPI_NAME改为KPI_FULL_NAME</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
