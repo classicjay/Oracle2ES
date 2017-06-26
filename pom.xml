@@ -5,11 +5,11 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>Oracle2ES</artifactId>
-	<version>0.1.4-SNAPSHOT</version>
+	<version>0.1.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Oracle2ES</name>
-	<description>将ik分词器粒度由ik_smart的最初改为ik_max_word最细</description>
+	<description>根据需求将ik分词改为standard分词，即默认分割到每个单字</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

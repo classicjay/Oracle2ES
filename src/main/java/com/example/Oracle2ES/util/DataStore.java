@@ -141,8 +141,7 @@ public class DataStore {
                     mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").field("include_in_all", false).endObject();
                 }
                 else {
-                    //analyzer指入数时使用的分词器，search_analyzer指查询时使用的分词器，对于已经使用细粒度分词的text，可以使用粗粒度查询
-                    mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("analyzer", "ik_max_word").field("search_analyzer", "ik_max_word").field("include_in_all", false).endObject();
+                    mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("include_in_all", false).endObject();
                 }
             }
             mappingStr = mapping.endObject().endObject().endObject().string();
