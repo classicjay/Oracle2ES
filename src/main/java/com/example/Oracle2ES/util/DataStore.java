@@ -93,7 +93,13 @@ public class DataStore {
                 Iterator iterator = map.entrySet().iterator();
                 while (iterator.hasNext()){
                     Map.Entry entry = (Map.Entry)iterator.next();
-                    data = data.field((String) entry.getKey(),(String) entry.getValue());
+                    if (((String) entry.getKey()).equals("KPI_Name_Length")){
+                        data = data.field((String) entry.getKey(), map.get("KPI_Name").toString().length());
+                    }else if(((String) entry.getKey()).equals("Subject_Name_Length")){
+                        data = data.field((String) entry.getKey(), map.get("Subject_Name").toString().length());
+                    }else {
+                        data = data.field((String) entry.getKey(),(String) entry.getValue());
+                    }
                 }
                 String dataStr = data.endObject().string();
                 //此处指定id
@@ -136,11 +142,11 @@ public class DataStore {
             while (iterator.hasNext()){
                 Map.Entry entry = (Map.Entry)iterator.next();
                 String key=(String)entry.getKey();
-                if(key.substring(key.length()-4,key.length()).equals("Code"))
-                {
+                if(key.substring(key.length()-4,key.length()).equals("Code")|| key.equals("Acct_Type")) {
                     mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").field("include_in_all", false).endObject();
-                }
-                else {
+                }else if(key.equals("KPI_Name_Length")||key.equals("Subject_Name_Length")){
+                    mapping = mapping.startObject((String) entry.getKey()).field("type", "integer").field("include_in_all", false).endObject();
+                }else {
                     mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("include_in_all", false).endObject();
                 }
             }

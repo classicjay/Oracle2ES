@@ -7,11 +7,11 @@
     </select>
 
     <select id="fetchKpiMapping" resultType="java.util.HashMap">
-        select t.KPI_CODE "KPI_Code",t.KPI_FULL_NAME "KPI_Name",
+        select t.KPI_CODE "KPI_Code",t.KPI_FULL_NAME "KPI_Name",t.KPI_DESCRIPTION "KPI_Desc",t.IS_MINUS
         case t.LABEL_TYPE
         when 'D' then '日报'
         when 'M' then '月报'
-        else '其他' end  "Acct_Type"
+        else '其他' end  "Acct_Type",1 "KPI_Name_Length"
         from DMCODE_PUB.DMCODE_COMP_KPI_MAPPING t where t.IS_VALID='1'
 
         <!--只有SSS一条数的测试表-->
@@ -28,7 +28,7 @@
         case t.LABEL_TYPE
         when '1' then '日报'
         when '2' then '月报'
-        else '其他' end  "Acct_Type"
+        else '其他' end  "Acct_Type",1 "Subject_Name_Length"
         from DW_NEWQUERY_SUBJECT t
     </select>
 
