@@ -7,7 +7,7 @@
     </select>
 
     <select id="fetchKpiMapping" resultType="java.util.HashMap">
-        select t.KPI_CODE "KPI_Code",t.KPI_FULL_NAME "KPI_Name",t.KPI_DESCRIPTION "KPI_Desc",t.IS_MINUS
+        select t.KPI_CODE "KPI_Code",t.KPI_FULL_NAME "KPI_Name",t.KPI_DESCRIPTION "KPI_Desc",t.IS_MINUS,
         case t.LABEL_TYPE
         when 'D' then '日报'
         when 'M' then '月报'
