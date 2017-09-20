@@ -134,18 +134,30 @@ public class DataStore {
      */
     public static void createMapping(String indexName, String typeName, HashMap<String,String> paramMap){
         PutMappingRequest request = null;
+        HashMap<String,Object> fieldMap = new HashMap<>();
+//        HashMap <String,String> pinyinMap=new HashMap<>();
+//        pinyinMap.put("type","text");
+//        pinyinMap.put("analyzer","pinyin_analyzer");
+        HashMap<String,Object> keywordMap = new HashMap<>();
+        keywordMap.put("type","text");
+        keywordMap.put("analyzer","pinyin_analyzer");
+        fieldMap.put("keyword",keywordMap);
+//        fieldMap.put("pinyin",pinyinMap);
         try {
             XContentBuilder mapping= XContentFactory.jsonBuilder().startObject();
             String mappingStr;
             mapping = mapping.startObject(typeName).startObject("_all").field("enabled",false).endObject().startObject("properties");
             Iterator iterator = paramMap.entrySet().iterator();
-            while (iterator.hasNext()){
+            while (iterator.hasNext()){//todo ik_max_word
                 Map.Entry entry = (Map.Entry)iterator.next();
                 String key=(String)entry.getKey();
                 if(key.substring(key.length()-4,key.length()).equals("Code")|| key.equals("Acct_Type")) {
                     mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").field("include_in_all", false).endObject();
                 }else if(key.equals("KPI_Name_Length")||key.equals("Subject_Name_Length")){
                     mapping = mapping.startObject((String) entry.getKey()).field("type", "integer").field("include_in_all", false).endObject();
+                }else if(key.substring(key.length()-4,key.length()).equals("Name")){
+                    //nothing
+                    mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("fields", fieldMap).endObject();
                 }else {
                     mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("include_in_all", false).endObject();
                 }
@@ -172,6 +184,56 @@ public class DataStore {
      */
     public static void createIndex(String indexName) {
         TransportClient transportClient = null;
+        HashMap<String,Object> setMap = new HashMap<>();
+        HashMap<String,Object> indexHm = new HashMap<>();
+        HashMap<String,Object> analysisHm = new HashMap<>();
+        HashMap<String,Object> analyzerHm = new HashMap<>();
+        HashMap<String,Object> pinyin_analyzerHm = new HashMap<>();
+        HashMap<String,Object> tokenizerHm = new HashMap<>();
+        HashMap<String,Object> my_pinyinHm = new HashMap<>();
+
+        my_pinyinHm.put("type","pinyin");
+        my_pinyinHm.put("keep_first_letter","false");
+        my_pinyinHm.put("keep_none_chinese_in_first_letter","false");
+        my_pinyinHm.put("keep_none_chinese","false");
+        my_pinyinHm.put("keep_full_pinyin","false");
+        my_pinyinHm.put("none_chinese_pinyin_tokenize","false");
+
+        my_pinyinHm.put("keep_joined_full_pinyin","true");
+        my_pinyinHm.put("keep_none_chinese_in_joined_full_pinyin","true");
+        my_pinyinHm.put("keep_original","true");
+        my_pinyinHm.put("lowercase","true") ;
+
+
+        pinyin_analyzerHm.put("tokenizer","my_pinyin");
+        analyzerHm.put("pinyin_analyzer",pinyin_analyzerHm);
+
+        tokenizerHm.put("my_pinyin",my_pinyinHm);
+
+        analysisHm.put("analyzer",analyzerHm);
+        analysisHm.put("tokenizer",tokenizerHm);
+
+        indexHm.put("analysis",analysisHm);
+
+        setMap.put("index",indexHm);
+
+        try {
+            transportClient = GenerateClient.getClient();
+            transportClient.admin().indices().create(new CreateIndexRequest(indexName).updateAllTypes(true).settings(setMap)).actionGet();
+        } catch (ResourceAlreadyExistsException | IllegalStateException | UnknownHostException e) {
+            e.printStackTrace();
+            logger.info("该索引已经存在或客户端已经关闭！");
+        }finally {
+            transportClient.close();
+        }
+    }
+
+    /**
+     * 创建索引-4ZC
+     * @param indexName
+     */
+    public static void createZCIndex(String indexName) {
+        TransportClient transportClient = null;
         try {
             transportClient = GenerateClient.getClient();
             transportClient.admin().indices().create(new CreateIndexRequest(indexName).updateAllTypes(true)).actionGet();
@@ -182,6 +244,48 @@ public class DataStore {
             transportClient.close();
         }
     }
+
+    /**
+     * 创建映射-4ZC
+     * 创建mapping
+     * @param indexName 索引名
+     * @param typeName 类型名
+     * @throws Exception
+     */
+    public static void createZCMapping(String indexName, String typeName, HashMap<String,String> paramMap){
+        PutMappingRequest request = null;
+        try {
+            XContentBuilder mapping= XContentFactory.jsonBuilder().startObject();
+            String mappingStr;
+            mapping = mapping.startObject(typeName).startObject("_all").field("enabled",false).endObject().startObject("properties");
+            Iterator iterator = paramMap.entrySet().iterator();
+            while (iterator.hasNext()){
+                Map.Entry entry = (Map.Entry)iterator.next();
+                String key=(String)entry.getKey();
+                if(key.equals("searchword")) {
+                    System.out.println("--------searchword");
+                    mapping = mapping.startObject((String)entry.getKey()).field("type", "text").field("analyzer","ik_smart").field("search_analyzer", "ik_smart").field("include_in_all", false).endObject();
+                }else {
+                    mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").field("include_in_all", false).endObject();
+                }
+            }
+            mappingStr = mapping.endObject().endObject().endObject().string();
+            request = Requests.putMappingRequest(indexName).type(typeName).source(mappingStr);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        TransportClient transportClient = null;
+        try {
+            transportClient = GenerateClient.getClient();
+            transportClient.admin().indices().putMapping(request).actionGet();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }finally {
+            transportClient.close();
+        }
+    }
+
+
 
     /**
      * 获取Map中第一个键值对的value

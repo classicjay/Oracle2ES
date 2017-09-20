@@ -12,7 +12,14 @@
         when 'D' then '日报'
         when 'M' then '月报'
         else '其他' end  "Acct_Type",1 "KPI_Name_Length"
-        from DMCODE_PUB.DMCODE_COMP_KPI_MAPPING t where t.IS_VALID='1'
+        ,case UNIT
+        when '%' then
+        '1'
+        else '0'
+        end IS_PERCENTAGE
+        from DMCODE_PUB.DMCODE_COMP_KPI_MAPPING t
+        <!--from DMCODE_COMP_KPI_MAPPING t-->
+        where t.IS_VALID='1'
 
         <!--只有SSS一条数的测试表-->
         <!--select t.KPI_CODE "KPI_Code",t.KPI_NAME "KPI_Name",-->
@@ -28,7 +35,7 @@
         case t.LABEL_TYPE
         when '1' then '日报'
         when '2' then '月报'
-        else '其他' end  "Acct_Type",1 "Subject_Name_Length"
+        else '其他' end  "Acct_Type",1 "Subject_Name_Length",URL MARKNAME
         from DW_NEWQUERY_SUBJECT t
     </select>
 
@@ -40,4 +47,66 @@
         else '其他' end  "Acct_Type"
         from DW_NEWQUERY_REPORT t
     </select>
+
+    <select id="fetchChannel" resultType="java.util.HashMap">
+        select CHANNEL_TYPE_DESC "searchword",
+        MAPPING_ID "code",
+        CHANNEL_TYPE_DESC "codename",
+        'channel' "dimensiontype"
+        from DMCODE_PUB.DMCODE_BASE_CHANNEL_TYPE
+    </select>
+    
+    <select id="fetchProduct" resultType="java.util.HashMap">
+        select PRODUCT_DESC "searchword",
+        PRODUCT_ID "code",
+        PRODUCT_DESC "codename",
+        'product' "dimensiontype"
+        from DMCODE_PUB.DMCODE_GJ_PRODUCT
+    </select>
+    
+    <select id="fetchService" resultType="java.util.HashMap">
+        select SERVICE_DESC "searchword",
+        SERVICE_TYPE "code",
+        SERVICE_DESC "codename",
+        'service' "dimensiontype"
+        from DMCODE_PUB.DMCODE_GJ_SERVICE_TYPE
+    </select>
+    
+    <select id="fetchPro" resultType="java.util.HashMap">
+        select PRO_NAME "searchword",
+        PROV_ID "code",
+        PRO_NAME "codename",
+        'pro' "dimensiontype"
+        from DMCODE_PUB.DMCODE_PROVINCE
+    </select>
+
+    <select id="fetchArea" resultType="java.util.HashMap">
+        <!--select AREA_SHORT_DESC "searchword",-->
+        <!--AREA_ID "code",-->
+        <!--AREA_DESC "codename",-->
+        <!--'area' "dimensiontype"-->
+        <!--from DMCODE_PUB.DMCODE_AREA-->
+
+        select AREA_SHORT_DESC "searchword",
+        AREA_ID "code",
+        AREA_DESC "codename",
+        'area' "dimensiontype",
+        p.PRO_NAME "relationpro",
+        p.PROV_ID "relationproid"
+        from DMCODE_PUB.DMCODE_AREA a, DMCODE_PUB.DMCODE_PROVINCE p
+        where a.PROV_ID = p.PROV_ID
+    </select>
+
+    <select id="fetchDimension" resultType="java.util.HashMap">
+        select CHANNEL_TYPE_NAME "searchword",
+        DIMENSION_CODE "code",
+        CHANNEL_TYPE_NAME "codename",
+        case DIMENSION_TYPE_CODE
+        when '1' then 'channel'
+        when '2' then 'product'
+        when '3' then 'service'
+        end "dimensiontype"
+        from DW_NEWQUERY_DIMENSION_NAME where TYPE = '2'
+    </select>
+
 </mapper>

@@ -74,4 +74,16 @@ public class Oracle2ESController {
         }
     }
 
+    /**
+     * 从16库里取省份+地市+三种维度码表入到ES
+     */
+    @PostMapping("/zhaochongImport")
+    public void zhaochongImport(){
+        try {
+            oracle2ESService.zhaochongImp();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

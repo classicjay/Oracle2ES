@@ -29,7 +29,7 @@ public class GenerateClient {
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("10.249.216.109"), 9300))
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("10.249.216.110"), 9300))
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("10.249.216.111"), 9300));
-//					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.31.2"), 9300));
+//                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.31.2"), 9300));
         return client;
     }
 }

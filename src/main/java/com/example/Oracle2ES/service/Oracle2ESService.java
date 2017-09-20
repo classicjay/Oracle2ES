@@ -43,7 +43,7 @@ public class Oracle2ESService {
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchKpiMapping();
 //        String indexName = "es_dw3.0_v2";
-        String indexName = "es_dw3.0_v2_is_minus";
+        String indexName = "es_dw3.0_v2_is_minus_test";
         String typeName = "K";
         String id = "KPI_Code";
         if (null != dataList && !dataList.isEmpty()){
@@ -60,7 +60,7 @@ public class Oracle2ESService {
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchSubjectCode();
 //        String indexName = "es_dw3.0_v2";
-        String indexName = "es_dw3.0_v2_is_minus";
+        String indexName = "es_dw3.0_v2_is_minus_test";
         String typeName = "T";
         String id = "Subject_Code";
         if (null != dataList && !dataList.isEmpty()){
@@ -87,5 +87,25 @@ public class Oracle2ESService {
         }else {
             logger.info("报告码表oracle查询为空");
         }
+    }
+
+    public void zhaochongImp()throws Exception{
+//        List<HashMap<String,String>> channelList = oracle2ESMapper.fetchChannel();
+//        List<HashMap<String,String>> productList = oracle2ESMapper.fetchProduct();
+//        List<HashMap<String,String>> serviceList = oracle2ESMapper.fetchService();
+        List<HashMap<String,String>> dimensionList = oracle2ESMapper.fetchDimension();
+        List<HashMap<String,String>> provList = oracle2ESMapper.fetchPro();
+        List<HashMap<String,String>> areaList = oracle2ESMapper.fetchArea();
+        String indexName = "dimension_search";
+        String typeName = "dimension";
+        String id = "code";
+        DataStore.createZCIndex(indexName);
+        DataStore.createZCMapping(indexName,typeName,areaList.get(0));
+//        DataStore.bulkDataStorage(indexName,typeName,channelList,id);
+//        DataStore.bulkDataStorage(indexName,typeName,productList,id);
+//        DataStore.bulkDataStorage(indexName,typeName,serviceList,id);
+        DataStore.bulkDataStorage(indexName,typeName,dimensionList,id);
+        DataStore.bulkDataStorage(indexName,typeName,provList,id);
+        DataStore.bulkDataStorage(indexName,typeName,areaList,id);
     }
 }
