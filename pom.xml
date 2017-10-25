@@ -5,7 +5,7 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>Oracle2ES-virtual</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Oracle2ES</name>
@@ -105,7 +105,7 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>5.5.2</version>
+			<version>5.2.1</version>
 		</dependency>
 
 		<dependency>
