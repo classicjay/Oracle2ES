@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>Oracle2ES</artifactId>
-	<version>0.3.4-SNAPSHOT</version>
+	<artifactId>Oracle2ES-virtual</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Oracle2ES</name>
@@ -96,11 +96,11 @@
 			<version>2.4</version>
 		</dependency>
 
-		<!--<dependency>-->
-			<!--<groupId>org.elasticsearch.client</groupId>-->
-			<!--<artifactId>transport</artifactId>-->
-			<!--<version>5.2.1</version>-->
-		<!--</dependency>-->
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>transport</artifactId>
+			<version>5.2.1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
@@ -138,11 +138,11 @@
 			<version>2.7</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>x-pack-transport</artifactId>
-			<version>5.5.2</version>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.elasticsearch.client</groupId>-->
+			<!--<artifactId>x-pack-transport</artifactId>-->
+			<!--<version>5.5.2</version>-->
+		<!--</dependency>-->
 	</dependencies>
 
 	<build>
