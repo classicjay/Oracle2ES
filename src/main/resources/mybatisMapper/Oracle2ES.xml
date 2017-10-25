@@ -44,7 +44,7 @@
         case t.LABEL_TYPE
         when '1' then '全部'
         when '2' then '全部'
-        else '其他' end  "Acct_Type"
+        else '全部' end  "Acct_Type",1 "Report_Name_Length"
         from DW_NEWQUERY_REPORT t
     </select>
 

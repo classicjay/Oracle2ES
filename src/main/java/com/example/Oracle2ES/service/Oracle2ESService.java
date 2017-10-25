@@ -43,7 +43,7 @@ public class Oracle2ESService {
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchKpiMapping();
 //        String indexName = "es_dw3.0_v2";
-        String indexName = "es_dw3.0_v2_is_minus_test";
+        String indexName = "es_intelligent_search";
         String typeName = "K";
         String id = "KPI_Code";
         if (null != dataList && !dataList.isEmpty()){
@@ -60,7 +60,7 @@ public class Oracle2ESService {
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchSubjectCode();
 //        String indexName = "es_dw3.0_v2";
-        String indexName = "es_dw3.0_v2_is_minus_test";
+        String indexName = "es_intelligent_search";
         String typeName = "T";
         String id = "Subject_Code";
         if (null != dataList && !dataList.isEmpty()){
@@ -76,7 +76,7 @@ public class Oracle2ESService {
     public void reportCodeImp()throws Exception{
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchReportCode();
-        String indexName = "es_dw3.0_v2";
+        String indexName = "es_intelligent_search";
         String typeName = "R";
         String id = "Report_Code";
         if (null != dataList && !dataList.isEmpty()){

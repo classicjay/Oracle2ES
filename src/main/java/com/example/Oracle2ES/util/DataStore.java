@@ -97,6 +97,8 @@ public class DataStore {
                         data = data.field((String) entry.getKey(), map.get("KPI_Name").toString().length());
                     }else if(((String) entry.getKey()).equals("Subject_Name_Length")){
                         data = data.field((String) entry.getKey(), map.get("Subject_Name").toString().length());
+                    }else if (((String) entry.getKey()).equals("Report_Name_Length")){
+                        data = data.field((String) entry.getKey(), map.get("Report_Name").toString().length());
                     }else {
                         data = data.field((String) entry.getKey(),(String) entry.getValue());
                     }
@@ -135,30 +137,32 @@ public class DataStore {
     public static void createMapping(String indexName, String typeName, HashMap<String,String> paramMap){
         PutMappingRequest request = null;
         HashMap<String,Object> fieldMap = new HashMap<>();
-//        HashMap <String,String> pinyinMap=new HashMap<>();
-//        pinyinMap.put("type","text");
-//        pinyinMap.put("analyzer","pinyin_analyzer");
+        HashMap<String,String> pinyinMap=new HashMap<>();
+        pinyinMap.put("type","text");
+        pinyinMap.put("analyzer","pinyin_analyzer");
         HashMap<String,Object> keywordMap = new HashMap<>();
         keywordMap.put("type","text");
         keywordMap.put("analyzer","pinyin_analyzer");
         fieldMap.put("keyword",keywordMap);
-//        fieldMap.put("pinyin",pinyinMap);
+        fieldMap.put("pinyin",pinyinMap);
         try {
             XContentBuilder mapping= XContentFactory.jsonBuilder().startObject();
             String mappingStr;
             mapping = mapping.startObject(typeName).startObject("_all").field("enabled",false).endObject().startObject("properties");
             Iterator iterator = paramMap.entrySet().iterator();
-            while (iterator.hasNext()){//todo ik_max_word
+            while (iterator.hasNext()){
                 Map.Entry entry = (Map.Entry)iterator.next();
                 String key=(String)entry.getKey();
                 if(key.substring(key.length()-4,key.length()).equals("Code")|| key.equals("Acct_Type")) {
                     mapping = mapping.startObject((String)entry.getKey()).field("type", "keyword").field("include_in_all", false).endObject();
-                }else if(key.equals("KPI_Name_Length")||key.equals("Subject_Name_Length")){
+                }else if(key.equals("KPI_Name_Length")||key.equals("Subject_Name_Length")||key.equals("Report_Name_Length")){
                     mapping = mapping.startObject((String) entry.getKey()).field("type", "integer").field("include_in_all", false).endObject();
                 }else if(key.substring(key.length()-4,key.length()).equals("Name")){
-                    //nothing
                     mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("fields", fieldMap).endObject();
-                }else {
+//                    mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("analyzer","ik_max_word").field("search_analyzer", "ik_max_word").field("include_in_all", false).endObject();
+                }else if (key.substring(key.length()-4,key.length()).equals("Desc")){
+                    mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("analyzer","ik_max_word").field("search_analyzer", "ik_max_word").field("include_in_all", false).endObject();
+                } else {
                     mapping = mapping.startObject((String) entry.getKey()).field("type", "text").field("include_in_all", false).endObject();
                 }
             }
