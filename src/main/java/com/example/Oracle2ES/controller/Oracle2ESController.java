@@ -75,6 +75,18 @@ public class Oracle2ESController {
     }
 
     /**
+     * 从16库里取报表码表入到ES
+     */
+    @PostMapping("/reportTableCodeImport")
+    public void reportTableCodeImport(){
+        try {
+            oracle2ESService.reportTableCodeImp();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 从16库里取省份+地市+三种维度码表入到ES
      */
     @PostMapping("/zhaochongImport")

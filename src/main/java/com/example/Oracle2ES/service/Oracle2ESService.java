@@ -99,9 +99,9 @@ public class Oracle2ESService {
             DataStore.createIndex(indexName);
             DataStore.createMapping(indexName,typeName,dataList.get(0));
             DataStore.bulkDataStorage(indexName,typeName,dataList,id);
-            logger.info("专题码表入数成功");
+            logger.info("报表码表入数成功");
         }else {
-            logger.info("专题码表oracle查询为空");
+            logger.info("报表码表oracle查询为空");
         }
     }
 
