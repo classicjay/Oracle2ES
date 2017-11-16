@@ -17,8 +17,7 @@
         '1'
         else '0'
         end IS_PERCENTAGE
-        from DMCODE_PUB.DMCODE_COMP_KPI_MAPPING t
-        <!--from DMCODE_COMP_KPI_MAPPING t-->
+        from V_DMCODE_COMP_KPI_MAPPING t
         where t.IS_VALID='1'
 
         <!--只有SSS一条数的测试表-->
@@ -36,7 +35,7 @@
         when '1' then '日报'
         when '2' then '月报'
         else '其他' end  "Acct_Type",1 "Subject_Name_Length",URL MARKNAME
-        from DW_NEWQUERY_SUBJECT t
+        from V_DW_NEWQUERY_SUBJECT t
     </select>
 
     <select id="fetchReportCode" resultType="java.util.HashMap">
@@ -46,6 +45,16 @@
         when '2' then '全部'
         else '全部' end  "Acct_Type",1 "Report_Name_Length"
         from DW_NEWQUERY_REPORT t
+    </select>
+
+    <select id="fetchReportTableCode" resultType="java.util.HashMap">
+        select t.REPORT_TABLE_CODE "ReportTable_Code",t.REPORT_TABLE_NAME "ReportTable_Name",
+        t.REPORT_TABLE_DESC "ReportTable_Desc",
+        case t.LABEL_TYPE
+        when '1' then '日报'
+        when '2' then '月报'
+        else '其他' end  "Acct_Type",1 "ReportTable_Name_Length"
+        from V_DW_NEWQUERY_REPORT_TABLE t
     </select>
 
     <select id="fetchChannel" resultType="java.util.HashMap">

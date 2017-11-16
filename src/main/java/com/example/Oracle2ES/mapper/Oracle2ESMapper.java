@@ -20,6 +20,7 @@ public interface Oracle2ESMapper {
     public List<HashMap<String,String>> fetchKpiMapping();
     public List<HashMap<String,String>> fetchSubjectCode();
     public List<HashMap<String,String>> fetchReportCode();
+    public List<HashMap<String,String>> fetchReportTableCode();
     public List<HashMap<String,String>> fetchChannel();
     public List<HashMap<String,String>> fetchProduct();
     public List<HashMap<String,String>> fetchService();

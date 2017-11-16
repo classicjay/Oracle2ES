@@ -89,6 +89,22 @@ public class Oracle2ESService {
         }
     }
 
+    public void reportTableCodeImp()throws Exception{
+        List<HashMap<String,String>> dataList = new ArrayList<>();
+        dataList = oracle2ESMapper.fetchReportTableCode();
+        String indexName = "es_intelligent_search";
+        String typeName = "RT";
+        String id = "ReportTable_Code";
+        if (null != dataList && !dataList.isEmpty()){
+            DataStore.createIndex(indexName);
+            DataStore.createMapping(indexName,typeName,dataList.get(0));
+            DataStore.bulkDataStorage(indexName,typeName,dataList,id);
+            logger.info("专题码表入数成功");
+        }else {
+            logger.info("专题码表oracle查询为空");
+        }
+    }
+
     public void zhaochongImp()throws Exception{
 //        List<HashMap<String,String>> channelList = oracle2ESMapper.fetchChannel();
 //        List<HashMap<String,String>> productList = oracle2ESMapper.fetchProduct();
