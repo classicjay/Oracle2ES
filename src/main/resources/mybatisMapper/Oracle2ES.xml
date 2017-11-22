@@ -18,7 +18,7 @@
         else '0'
         end IS_PERCENTAGE
         from V_DMCODE_COMP_KPI_MAPPING t
-        where t.IS_VALID='1'
+        where t.IS_VALID='1' and t.SUBJECT_DESC='TJ'
 
         <!--只有SSS一条数的测试表-->
         <!--select t.KPI_CODE "KPI_Code",t.KPI_NAME "KPI_Name",-->
