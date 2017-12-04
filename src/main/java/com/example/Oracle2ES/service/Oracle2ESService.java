@@ -2,10 +2,13 @@ package com.example.Oracle2ES.service;
 
 import com.example.Oracle2ES.mapper.Oracle2ESMapper;
 import com.example.Oracle2ES.util.DataStore;
+import com.example.Oracle2ES.util.GenerateClient;
 import org.apache.log4j.Logger;
+import org.elasticsearch.client.transport.TransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,30 +29,24 @@ public class Oracle2ESService {
     Oracle2ESMapper oracle2ESMapper;
 
     private static Logger logger = org.apache.log4j.Logger.getLogger(Oracle2ESService.class);
+    private static final String IS_INDEX = "es_intelligent_search";
+    private static final String KPI_TYPE = "K";
+    private static final String SUBJECT_TYPE = "T";
+    private static final String REPORT_TYPE = "R";
+    private static final String REPORT_TABLE_TYPE = "RT";
 
-    public void testImport() throws Exception{
-        List<HashMap<String,String>> dataList = new ArrayList<>();
-        dataList = oracle2ESMapper.testFetch();
-        String indexName = "testzj";
-        String typeName = "kpicodemapping";
-        String id = "KPI_Code";
-        DataStore.createIndex(indexName);
-        DataStore.createMapping(indexName,typeName,dataList.get(0));
-        DataStore.bulkDataStorage(indexName,typeName,dataList,id);
-        logger.info("success");
-    }
+    private static final String KPI_ID = "KPI_Code";
+    private static final String SUBJECT_ID = "Subject_Code";
+    private static final String REPORT_ID = "Report_Code";
+    private static final String REPORT_TABLE_ID = "ReportTable_Code";
 
     public void kpiMappingImp()throws Exception{
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchKpiMapping();
-//        String indexName = "es_dw3.0_v2";
-        String indexName = "es_intelligent_search";
-        String typeName = "K";
-        String id = "KPI_Code";
         if (null != dataList && !dataList.isEmpty()){
-            DataStore.createIndex(indexName);
-            DataStore.createMapping(indexName,typeName,dataList.get(0));
-            DataStore.bulkDataStorage(indexName,typeName,dataList,id);
+            DataStore.createIndex(IS_INDEX);
+            DataStore.createMapping(IS_INDEX,KPI_TYPE,dataList.get(0));
+            DataStore.bulkDataStorage(IS_INDEX,KPI_TYPE,dataList,KPI_ID);
             logger.info("指标映射表入数成功");
         }else {
             logger.info("指标映射表oracle查询为空");
@@ -59,14 +56,10 @@ public class Oracle2ESService {
     public void subjectCodeImp()throws Exception{
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchSubjectCode();
-//        String indexName = "es_dw3.0_v2";
-        String indexName = "es_intelligent_search";
-        String typeName = "T";
-        String id = "Subject_Code";
         if (null != dataList && !dataList.isEmpty()){
-            DataStore.createIndex(indexName);
-            DataStore.createMapping(indexName,typeName,dataList.get(0));
-            DataStore.bulkDataStorage(indexName,typeName,dataList,id);
+            DataStore.createIndex(IS_INDEX);
+            DataStore.createMapping(IS_INDEX,SUBJECT_TYPE,dataList.get(0));
+            DataStore.bulkDataStorage(IS_INDEX,SUBJECT_TYPE,dataList,SUBJECT_ID);
             logger.info("专题码表入数成功");
         }else {
             logger.info("专题码表oracle查询为空");
@@ -76,13 +69,10 @@ public class Oracle2ESService {
     public void reportCodeImp()throws Exception{
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchReportCode();
-        String indexName = "es_intelligent_search";
-        String typeName = "R";
-        String id = "Report_Code";
         if (null != dataList && !dataList.isEmpty()){
-            DataStore.createIndex(indexName);
-            DataStore.createMapping(indexName,typeName,dataList.get(0));
-            DataStore.bulkDataStorage(indexName,typeName,dataList,id);
+            DataStore.createIndex(IS_INDEX);
+            DataStore.createMapping(IS_INDEX,REPORT_TYPE,dataList.get(0));
+            DataStore.bulkDataStorage(IS_INDEX,REPORT_TYPE,dataList,REPORT_ID);
             logger.info("报告码表入数成功");
         }else {
             logger.info("报告码表oracle查询为空");
@@ -92,20 +82,17 @@ public class Oracle2ESService {
     public void reportTableCodeImp()throws Exception{
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchReportTableCode();
-        String indexName = "es_intelligent_search";
-        String typeName = "RT";
-        String id = "ReportTable_Code";
         if (null != dataList && !dataList.isEmpty()){
-            DataStore.createIndex(indexName);
-            DataStore.createMapping(indexName,typeName,dataList.get(0));
-            DataStore.bulkDataStorage(indexName,typeName,dataList,id);
+            DataStore.createIndex(IS_INDEX);
+            DataStore.createMapping(IS_INDEX,REPORT_TABLE_TYPE,dataList.get(0));
+            DataStore.bulkDataStorage(IS_INDEX,REPORT_TABLE_TYPE,dataList,REPORT_TABLE_ID);
             logger.info("报表码表入数成功");
         }else {
             logger.info("报表码表oracle查询为空");
         }
     }
 
-    public void zhaochongImp()throws Exception{
+    public void dimensionImport()throws Exception{
 //        List<HashMap<String,String>> channelList = oracle2ESMapper.fetchChannel();
 //        List<HashMap<String,String>> productList = oracle2ESMapper.fetchProduct();
 //        List<HashMap<String,String>> serviceList = oracle2ESMapper.fetchService();
@@ -123,5 +110,37 @@ public class Oracle2ESService {
         DataStore.bulkDataStorage(indexName,typeName,dimensionList,id);
         DataStore.bulkDataStorage(indexName,typeName,provList,id);
         DataStore.bulkDataStorage(indexName,typeName,areaList,id);
+    }
+
+    public void clearThenImport() throws Exception{
+        TransportClient transportClient = null;
+        try {
+            transportClient = GenerateClient.getClient();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        transportClient.admin().indices().prepareDelete(IS_INDEX).execute().actionGet();
+        List<HashMap<String,String>> kpiList = oracle2ESMapper.fetchKpiMapping();
+        List<HashMap<String,String>> subjectList = oracle2ESMapper.fetchSubjectCode();
+        List<HashMap<String,String>> reportList = oracle2ESMapper.fetchReportCode();
+        List<HashMap<String,String>> reportTableList = oracle2ESMapper.fetchReportTableCode();
+
+        DataStore.createIndex(IS_INDEX);
+        if (null != kpiList && !kpiList.isEmpty()){
+            DataStore.createMapping(IS_INDEX,KPI_TYPE,kpiList.get(0));
+            DataStore.bulkDataStorage(IS_INDEX,KPI_TYPE,kpiList,KPI_ID);
+        }
+        if (null != subjectList && !subjectList.isEmpty()){
+            DataStore.createMapping(IS_INDEX,SUBJECT_TYPE,subjectList.get(0));
+            DataStore.bulkDataStorage(IS_INDEX,SUBJECT_TYPE,subjectList,SUBJECT_ID);
+        }
+        if (null != reportList && !reportList.isEmpty()){
+            DataStore.createMapping(IS_INDEX,REPORT_TYPE,reportList.get(0));
+            DataStore.bulkDataStorage(IS_INDEX,REPORT_TYPE,reportList,REPORT_ID);
+        }
+        if (null != reportTableList && !reportTableList.isEmpty()){
+            DataStore.createMapping(IS_INDEX,REPORT_TABLE_TYPE,reportTableList.get(0));
+            DataStore.bulkDataStorage(IS_INDEX,REPORT_TABLE_TYPE,reportTableList,REPORT_TABLE_ID);
+        }
     }
 }

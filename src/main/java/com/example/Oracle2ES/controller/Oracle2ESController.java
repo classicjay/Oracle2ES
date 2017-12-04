@@ -25,18 +25,6 @@ public class Oracle2ESController {
 
     @Autowired
     Oracle2ESService oracle2ESService;
-    
-    /**
-     * 测试从库里取数后入到ES
-     */
-    @PostMapping("/dataImport")
-    public void dataImport(){
-        try {
-            oracle2ESService.testImport();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 从16库里取指标映射表入到ES
@@ -89,11 +77,20 @@ public class Oracle2ESController {
     /**
      * 从16库里取省份+地市+三种维度码表入到ES
      */
-    @PostMapping("/zhaochongImport")
-    public void zhaochongImport(){
+    @PostMapping("/dimensionImport")
+    public void dimensionImport(){
         try {
-            oracle2ESService.zhaochongImp();
+            oracle2ESService.dimensionImport();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @PostMapping("/clearThenImport")
+    public void clearThenImport(){
+        try {
+            oracle2ESService.clearThenImport();
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
