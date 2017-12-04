@@ -40,6 +40,24 @@ public class Oracle2ESService {
     private static final String REPORT_ID = "Report_Code";
     private static final String REPORT_TABLE_ID = "ReportTable_Code";
 
+    private static final HashMap<String,String> defaultReportMap = new HashMap<>();
+    static {
+        defaultReportMap.put("Report_Code","1");
+        defaultReportMap.put("Report_Name","1");
+        defaultReportMap.put("Acct_Type","1");
+        defaultReportMap.put("Report_Name_Length","1");
+
+    }
+    private static final HashMap<String,String> defaultReporTabletMap = new HashMap<>();
+    static {
+        defaultReporTabletMap.put("ReportTable_Code","1");
+        defaultReporTabletMap.put("ReportTable_Name","1");
+        defaultReporTabletMap.put("ReportTable_Desc","1");
+        defaultReporTabletMap.put("Acct_Type","1");
+        defaultReporTabletMap.put("ReportTable_Name_Length","1");
+
+    }
+
     public void kpiMappingImp()throws Exception{
         List<HashMap<String,String>> dataList = new ArrayList<>();
         dataList = oracle2ESMapper.fetchKpiMapping();
@@ -120,6 +138,7 @@ public class Oracle2ESService {
             e.printStackTrace();
         }
         transportClient.admin().indices().prepareDelete(IS_INDEX).execute().actionGet();
+        logger.info("成功删除索引");
         List<HashMap<String,String>> kpiList = oracle2ESMapper.fetchKpiMapping();
         List<HashMap<String,String>> subjectList = oracle2ESMapper.fetchSubjectCode();
         List<HashMap<String,String>> reportList = oracle2ESMapper.fetchReportCode();
@@ -134,12 +153,12 @@ public class Oracle2ESService {
             DataStore.createMapping(IS_INDEX,SUBJECT_TYPE,subjectList.get(0));
             DataStore.bulkDataStorage(IS_INDEX,SUBJECT_TYPE,subjectList,SUBJECT_ID);
         }
+        DataStore.createMapping(IS_INDEX,REPORT_TYPE,defaultReportMap);
         if (null != reportList && !reportList.isEmpty()){
-            DataStore.createMapping(IS_INDEX,REPORT_TYPE,reportList.get(0));
             DataStore.bulkDataStorage(IS_INDEX,REPORT_TYPE,reportList,REPORT_ID);
         }
+        DataStore.createMapping(IS_INDEX,REPORT_TABLE_TYPE,defaultReporTabletMap);
         if (null != reportTableList && !reportTableList.isEmpty()){
-            DataStore.createMapping(IS_INDEX,REPORT_TABLE_TYPE,reportTableList.get(0));
             DataStore.bulkDataStorage(IS_INDEX,REPORT_TABLE_TYPE,reportTableList,REPORT_TABLE_ID);
         }
     }
